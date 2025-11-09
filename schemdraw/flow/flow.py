@@ -455,6 +455,22 @@ class StateEnd(Connect):
         dr = self._userparams.get('dr', .15)
         self.segments.append(SegmentCircle((r, 0), r-dr))
 
+class StateMoore(Connect):
+    ''' Moore State
+
+        Args:
+            r: radius
+
+        Anchors:
+            * 16 compass points (N, S, E, W, NE, NNE, etc.)
+    '''
+
+    def _set_segments(self):
+        super()._set_segments()
+        w = self.params['w']
+        h = self.params['h']
+        self.segments.append(Segment([(0, 0), (w, 0)]))
+
 
 Process = Box
 RoundProcess = RoundBox
