@@ -643,11 +643,13 @@ class DFlipFlop(Ic):
     _element_defaults = {
         'size': (2, 3)
     }
-    def __init__(self, preclr: bool = False, preclrinvert: bool = True, **kwargs):
+    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True, **kwargs):
         pins = [IcPin('D', side='left', slot='2/2'),
                 IcPin('>', side='left', slot='1/2'),
-                IcPin('Q', side='right', slot='2/2'),
-                IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar')]
+                IcPin('Q', side='right', slot='2/2')]
+
+        if qbar:
+            pins.extend(IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar'))
 
         if preclr:
             pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
@@ -677,12 +679,14 @@ class JKFlipFlop(Ic):
     _element_defaults = {
         'size': (2, 3)
     }
-    def __init__(self, preclr: bool = False, preclrinvert: bool = True, **kwargs):
+    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True, **kwargs):
         pins = [IcPin('J', side='left', slot='3/3'),
                 IcPin('>', side='left', slot='2/3'),
                 IcPin('K', side='left', slot='1/3'),
-                IcPin('Q', side='right', slot='3/3'),
-                IcPin(r'$\overline{Q}$', side='right', slot='1/3', anchorname='Qbar')]
+                IcPin('Q', side='right', slot='3/3')]
+
+        if qbar:
+            pins.extend([IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar')])
 
         if preclr:
             pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
