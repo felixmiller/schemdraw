@@ -657,6 +657,41 @@ class DFlipFlop(Ic):
         super().__init__(pins=pins, **kwargs)
 
 
+class IecDFlipFlop(Ic):
+    ''' IEC style D-Type Flip Flop
+
+        Args:
+            preclr: Show preset and clear inputs
+            preclrinvert: Add invert bubble to preset and clear inputs
+
+        Keyword Args:
+            size: Size of the box [default: (2, 3)]
+
+        Anchors:
+            * D
+            * CLK
+            * Q
+            * Qbar
+            * PRE
+            * CLR
+    '''
+    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True,
+                 nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
+        pins = [IcPin('1D', anchorname='D', side='left', slot='2/2'),
+                IcPin('C1', anchorname='CLK', dynamic=True, side='left', slot='1/2'),
+                IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
+
+        if qbar:
+            pins.append(IcPin(pin=nameqbarpin, anchorname='Qbar', invert=True, side='right', slot='1/2'))
+
+        if preclr:
+            pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
+                         IcPin('CLR', side='bottom', invert=preclrinvert)])
+            super().__init__(pins=pins, size=(2,4), edgepadH=1, **kwargs)
+        else:
+            super().__init__(pins=pins, size=(2,3), **kwargs)
+
+
 class TFlipFlop(Ic):
     ''' T-Type Flip Flop
 
@@ -690,6 +725,41 @@ class TFlipFlop(Ic):
             pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
                          IcPin('CLR', side='bottom', invert=preclrinvert)])
         super().__init__(pins=pins, **kwargs)
+
+
+class IecTFlipFlop(Ic):
+    ''' IEC style T-Type Flip Flop
+
+        Args:
+            preclr: Show preset and clear inputs
+            preclrinvert: Add invert bubble to preset and clear inputs
+
+        Keyword Args:
+            size: Size of the box [default: (2, 3)]
+
+        Anchors:
+            * T
+            * CLK
+            * Q
+            * Qbar
+            * PRE
+            * CLR
+    '''
+    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True,
+                 nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
+        pins = [IcPin('1T', anchorname='T', side='left', slot='2/2'),
+                IcPin('C1', anchorname='CLK', dynamic=True, side='left', slot='1/2'),
+                IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
+
+        if qbar:
+            pins.append(IcPin(pin=nameqbarpin, anchorname='Qbar', invert=True, side='right', slot='1/2'))
+
+        if preclr:
+            pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
+                         IcPin('CLR', side='bottom', invert=preclrinvert)])
+            super().__init__(pins=pins, size=(2,4), edgepadH=1, **kwargs)
+        else:
+            super().__init__(pins=pins, size=(2,3), **kwargs)
 
 
 class JKFlipFlop(Ic):
@@ -730,6 +800,43 @@ class JKFlipFlop(Ic):
         super().__init__(pins=pins, **kwargs)
 
 
+class IecJKFlipFlop(Ic):
+    ''' Iec style J-K Flip Flop
+
+        Args:
+            preclr: Show preset and clear inputs
+            preclrinvert: Add invert bubble to preset and clear inputs
+
+        Keyword Args:
+            size: Size of the box [default: (2, 3)]
+
+        Anchors:
+            * J
+            * K
+            * CLK
+            * Q
+            * Qbar
+            * PRE
+            * CLR
+    '''
+    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True,
+                 nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
+        pins = [IcPin('1J', anchorname='J', side='left', slot='3/3'),
+                IcPin('C1', anchorname='CLK', dynamic=True, side='left', slot='2/3'),
+                IcPin('1K', anchorname='K', side='left', slot='1/3'),
+                IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
+
+        if qbar:
+            pins.append(IcPin(pin=nameqbarpin, anchorname='Qbar', invert=True, side='right', slot='1/2'))
+
+        if preclr:
+            pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
+                         IcPin('CLR', side='bottom', invert=preclrinvert)])
+            super().__init__(pins=pins, size=(2,4), edgepadH=1, **kwargs)
+        else:
+            super().__init__(pins=pins, size=(2,3), **kwargs)
+
+
 class SRFlipFlop(Ic):
     ''' S-R Flip Flop
 
@@ -766,6 +873,43 @@ class SRFlipFlop(Ic):
                          IcPin('CLR', side='bottom', invert=preclrinvert)])
 
         super().__init__(pins=pins, **kwargs)
+
+
+class IecSRFlipFlop(Ic):
+    ''' Iec style J-K Flip Flop
+
+        Args:
+            preclr: Show preset and clear inputs
+            preclrinvert: Add invert bubble to preset and clear inputs
+
+        Keyword Args:
+            size: Size of the box [default: (2, 3)]
+
+        Anchors:
+            * S
+            * R
+            * CLK
+            * Q
+            * Qbar
+            * PRE
+            * CLR
+    '''
+    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True,
+                 nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
+        pins = [IcPin('1S', anchorname='S', side='left', slot='3/3'),
+                IcPin('C1', anchorname='CLK', dynamic=True, side='left', slot='2/3'),
+                IcPin('1R', anchorname='R', side='left', slot='1/3'),
+                IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
+
+        if qbar:
+            pins.append(IcPin(pin=nameqbarpin, anchorname='Qbar', invert=True, side='right', slot='1/2'))
+
+        if preclr:
+            pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
+                         IcPin('CLR', side='bottom', invert=preclrinvert)])
+            super().__init__(pins=pins, size=(2,4), edgepadH=1, **kwargs)
+        else:
+            super().__init__(pins=pins, size=(2,3), **kwargs)
 
 
 class VoltageRegulator(Ic):

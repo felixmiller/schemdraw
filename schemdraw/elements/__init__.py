@@ -152,6 +152,10 @@ from .intcircuits import (
     TFlipFlop,
     JKFlipFlop,
     SRFlipFlop,
+    IecDFlipFlop,
+    IecTFlipFlop,
+    IecJKFlipFlop,
+    IecSRFlipFlop,
     Ic555,
     SevenSegment,
     sevensegdigit
