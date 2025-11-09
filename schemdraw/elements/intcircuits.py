@@ -657,13 +657,48 @@ class DFlipFlop(Ic):
         super().__init__(pins=pins, **kwargs)
 
 
+class TFlipFlop(Ic):
+    ''' T-Type Flip Flop
+
+        Args:
+            preclr: Show preset and clear inputs
+            preclrinvert: Add invert bubble to preset and clear inputs
+
+        Keyword Args:
+            size: Size of the box [default: (2, 3)]
+
+        Anchors:
+            * T
+            * CLK
+            * Q
+            * Qbar
+            * PRE
+            * CLR
+    '''
+    _element_defaults = {
+        'size': (2, 3)
+    }
+    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True, **kwargs):
+        pins = [IcPin('T', side='left', slot='2/2'),
+                IcPin('>', side='left', slot='1/2'),
+                IcPin('Q', side='right', slot='2/2')]
+
+        if qbar:
+            pins.extend(IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar'))
+
+        if preclr:
+            pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
+                         IcPin('CLR', side='bottom', invert=preclrinvert)])
+        super().__init__(pins=pins, **kwargs)
+
+
 class JKFlipFlop(Ic):
     ''' J-K Flip Flop
 
         Args:
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
-            
+
         Keyword Args:
             size: Size of the box [default: (2, 3)]
 
@@ -683,6 +718,44 @@ class JKFlipFlop(Ic):
         pins = [IcPin('J', side='left', slot='3/3'),
                 IcPin('>', side='left', slot='2/3'),
                 IcPin('K', side='left', slot='1/3'),
+                IcPin('Q', side='right', slot='3/3')]
+
+        if qbar:
+            pins.extend([IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar')])
+
+        if preclr:
+            pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
+                         IcPin('CLR', side='bottom', invert=preclrinvert)])
+
+        super().__init__(pins=pins, **kwargs)
+
+
+class SRFlipFlop(Ic):
+    ''' S-R Flip Flop
+
+        Args:
+            preclr: Show preset and clear inputs
+            preclrinvert: Add invert bubble to preset and clear inputs
+
+        Keyword Args:
+            size: Size of the box [default: (2, 3)]
+
+        Anchors:
+            * S
+            * R
+            * CLK
+            * Q
+            * Qbar
+            * PRE
+            * CLR
+    '''
+    _element_defaults = {
+        'size': (2, 3)
+    }
+    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True, **kwargs):
+        pins = [IcPin('S', side='left', slot='3/3'),
+                IcPin('>', side='left', slot='2/3'),
+                IcPin('R', side='left', slot='1/3'),
                 IcPin('Q', side='right', slot='3/3')]
 
         if qbar:

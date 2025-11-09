@@ -149,7 +149,9 @@ from .intcircuits import (
     IcDIP,
     VoltageRegulator,
     DFlipFlop,
+    TFlipFlop,
     JKFlipFlop,
+    SRFlipFlop,
     Ic555,
     SevenSegment,
     sevensegdigit
