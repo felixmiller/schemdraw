@@ -649,7 +649,7 @@ class DFlipFlop(Ic):
                 IcPin('Q', side='right', slot='2/2')]
 
         if qbar:
-            pins.extend(IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar'))
+            pins.append(IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar'))
 
         if preclr:
             pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
@@ -684,7 +684,7 @@ class TFlipFlop(Ic):
                 IcPin('Q', side='right', slot='2/2')]
 
         if qbar:
-            pins.extend(IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar'))
+            pins.append(IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar'))
 
         if preclr:
             pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
@@ -721,7 +721,7 @@ class JKFlipFlop(Ic):
                 IcPin('Q', side='right', slot='3/3')]
 
         if qbar:
-            pins.extend([IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar')])
+            pins.append(IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar'))
 
         if preclr:
             pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
@@ -759,7 +759,7 @@ class SRFlipFlop(Ic):
                 IcPin('Q', side='right', slot='3/3')]
 
         if qbar:
-            pins.extend([IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar')])
+            pins.append(IcPin(r'$\overline{Q}$', side='right', slot='1/2', anchorname='Qbar'))
 
         if preclr:
             pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
