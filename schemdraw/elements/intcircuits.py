@@ -27,6 +27,8 @@ class IcPin:
                 '2/4' is the second pin on a side with 4 pins.
             invert:Add an invert bubble to the pin
             invertradius: Radius of invert bubble
+            dynamic: Add triangle to mark as dynamic (clk) pin
+            tristate: Add downwards triangle to mark as tristate pin
             color: Color for the pin and label
             rotation: Rotation for label text
             anchorname: Named anchor for the pin
@@ -38,6 +40,8 @@ class IcPin:
     slot: str | None = None
     invert: bool = False
     invertradius: float = 0.15
+    dynamic: bool = False,
+    tristate: bool = False,
     color: str | None = None
     rotation: float = 0
     anchorname: str | None = None
@@ -137,6 +141,8 @@ class Ic(Element):
             slot: str | None = None,
             invert: bool = False,
             invertradius: float = 0.15,
+            dynamic : bool = False,
+            tristate : bool = False,
             color: str | None = None,
             rotation: float = 0,
             anchorname: str | None = None,
@@ -154,6 +160,8 @@ class Ic(Element):
                     '2/4' is the second pin on a side with 4 pins.
                 invert:Add an invert bubble to the pin
                 invertradius: Radius of invert bubble
+                dynamic: Add triangle to mark as dynamic (clk) pin
+                tristate: Add downwards triangle to mark as tristate pin
                 color: Color for the pin and label
                 rotation: Rotation for label text
                 anchorname: Named anchor for the pin
@@ -162,8 +170,8 @@ class Ic(Element):
                 decoration: "underline" or "overline"
         '''
         side = cast(Side, side[0].upper())
-        self.pins[side].append(IcPin(name, pin, side, pos, slot, invert,
-                                    invertradius, color, rotation, anchorname, lblsize, href, decoration))
+        self.pins[side].append(IcPin(name, pin, side, pos, slot, invert, invertradius, dynamic, tristate,
+                                     color, rotation, anchorname, lblsize, href, decoration))
         self._setsize()
         return self
 
@@ -322,6 +330,7 @@ class Ic(Element):
                    'R': Point((sidesetup.leadlen, 0)),
                    'T': Point((0, sidesetup.leadlen)),
                    'B': Point((0, -sidesetup.leadlen))}.get(side, Point((0, 0)))
+        label_ofst = sidesetup.label_ofst
 
         # Anchor
         anchorpos = xy+leadext
@@ -375,13 +384,27 @@ class Ic(Element):
             self._drawclkpin(xy, leadext, side, pin, num)
             return
 
+        if pin.dynamic == True:
+            self._drawclkpin(xy, leadext, side, pin, num)
+            label_ofst += 0.4 * sidesetup.label_size/16  # equals clkw (todo: do not repeat computation)
+
+        pofst = {'L': Point((label_ofst, 0)),
+                    'R': Point((-label_ofst, 0)),
+                    'T': Point((0, -label_ofst)),
+                    'B': Point((0, label_ofst))}.get(side)
+
+        if pin.tristate == True:
+            scale = 0.75
+            w = h = (0.4 * sidesetup.label_size/16)
+
+            self._draw3stpin(xy+pofst, leadext, w*scale, h*scale, side, pin, num)
+            pofst = {'L': Point((label_ofst+w, 0)),
+                    'R': Point((-label_ofst-w, 0)),
+                    'T': Point((0, -label_ofst-h)),
+                    'B': Point((0, label_ofst+h))}.get(side)
+
         # Label (inside the box)
         if pin.name and pin.name != '':
-            pofst = {'L': Point((sidesetup.label_ofst, 0)),
-                     'R': Point((-sidesetup.label_ofst, 0)),
-                     'T': Point((0, -sidesetup.label_ofst)),
-                     'B': Point((0, sidesetup.label_ofst))}.get(side)
-
             align = cast(Optional[Tuple[Halign, Valign]],
                          {'L': ('left', 'center'),
                           'R': ('right', 'center'),
@@ -414,6 +437,26 @@ class Ic(Element):
                         Point((xy[0]+clkw, xy[1])),
                         Point((xy[0], xy[1]-clkh))]
         self.segments.append(Segment(clkpath))
+
+    def _draw3stpin(self, xy: Point, leadext: Point, w: float, h: float,
+                    side: Side, pin: IcPin, num: int) -> None:
+        ''' Draw clock pin > '''
+        sidesetup = self.sides.get(side, self._dflt_side)
+        sidesetup.label_size
+        if side == 'T':
+            poly = [Point((xy[0]-w/2, xy[1])),
+                        Point((xy[0], xy[1]-h)),
+                        Point((xy[0]+w/2, xy[1]))]
+        elif side == 'B':
+            poly = [Point((xy[0]-w/2, xy[1]+h)),
+                        Point((xy[0], xy[1])),
+                        Point((xy[0]+w/2, xy[1]+h))]
+        else:
+            w = math.copysign(w, -leadext[0]) if leadext[0] != 0 else w
+            poly = [Point((xy[0], xy[1]+h/2)),
+                        Point((xy[0]+w, xy[1]+h/2)),
+                        Point((xy[0]+w/2, xy[1]-h/2))]
+        self.segments.append(SegmentPoly(poly, lw=1.0)) # todo: make linewidth relative
 
     def _drawpins(self) -> None:
         ''' Draw all the pins '''
