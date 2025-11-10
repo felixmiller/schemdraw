@@ -721,8 +721,8 @@ class TFlipFlop(Ic):
     _element_defaults = {
         'size': (2, 3)
     }
-        pins = [IcPin('T', side='left', slot='2/2'),
     def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True, **kwargs):
+        pins = [IcPin('T', anchorname='TT', side='left', slot='2/2'),
                 IcPin('>', invert=negedge, side='left', slot='1/2'),
                 IcPin('Q', side='right', slot='2/2')]
 
@@ -759,7 +759,7 @@ class IecTFlipFlop(Ic):
     '''
     def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True,
                  nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
-        pins = [IcPin('1T', anchorname='T', side='left', slot='2/2'),
+        pins = [IcPin('1T', anchorname='TT', side='left', slot='2/2'),
                 IcPin('C1', anchorname='CLK', invert=negedge, dynamic=True, side='left', slot='1/2'),
                 IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
 
