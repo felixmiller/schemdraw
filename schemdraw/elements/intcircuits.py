@@ -873,9 +873,9 @@ class SRFlipFlop(Ic):
         'size': (2, 3)
     }
     def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True, **kwargs):
-        pins = [IcPin('S', side='left', slot='3/3'),
+        pins = [IcPin('S', anchorname='SET', side='left', slot='3/3'),
                 IcPin('>', side='left', slot='2/3'),
-                IcPin('R', side='left', slot='1/3'),
+                IcPin('R', anchorname='RST', side='left', slot='1/3'),
                 IcPin('Q', side='right', slot='3/3')]
 
         if qbar:
@@ -912,9 +912,9 @@ class IecSRFlipFlop(Ic):
     '''
     def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True,
                  nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
-        pins = [IcPin('1S', anchorname='S', side='left', slot='3/3'),
+        pins = [IcPin('1S', anchorname='SET', side='left', slot='3/3'),
                 IcPin('C1', anchorname='CLK', dynamic=True, side='left', slot='2/3'),
-                IcPin('1R', anchorname='R', side='left', slot='1/3'),
+                IcPin('1R', anchorname='RST', side='left', slot='1/3'),
                 IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
 
         if qbar:
