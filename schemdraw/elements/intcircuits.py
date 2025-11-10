@@ -626,6 +626,7 @@ class DFlipFlop(Ic):
     ''' D-Type Flip Flop
 
         Args:
+            qbar: Show inverted output
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
 
@@ -661,8 +662,11 @@ class IecDFlipFlop(Ic):
     ''' IEC style D-Type Flip Flop
 
         Args:
+            qbar: Show inverted output
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
+            nameqpin: Name of qpin (outside of box)
+            nameqbarpin: Nam of inverted output (outside of box)
 
         Keyword Args:
             size: Size of the box [default: (2, 3)]
@@ -696,6 +700,7 @@ class TFlipFlop(Ic):
     ''' T-Type Flip Flop
 
         Args:
+            qbar: Show inverted output
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
 
@@ -731,8 +736,11 @@ class IecTFlipFlop(Ic):
     ''' IEC style T-Type Flip Flop
 
         Args:
+            qbar: Show inverted output
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
+            nameqpin: Name of qpin (outside of box)
+            nameqbarpin: Nam of inverted output (outside of box)
 
         Keyword Args:
             size: Size of the box [default: (2, 3)]
@@ -766,6 +774,7 @@ class JKFlipFlop(Ic):
     ''' J-K Flip Flop
 
         Args:
+            qbar: Show inverted output
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
 
@@ -804,8 +813,11 @@ class IecJKFlipFlop(Ic):
     ''' Iec style J-K Flip Flop
 
         Args:
+            qbar: Show inverted output
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
+            nameqpin: Name of qpin (outside of box)
+            nameqbarpin: Nam of inverted output (outside of box)
 
         Keyword Args:
             size: Size of the box [default: (2, 3)]
@@ -841,6 +853,7 @@ class SRFlipFlop(Ic):
     ''' S-R Flip Flop
 
         Args:
+            qbar: Show inverted output
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
 
@@ -876,11 +889,14 @@ class SRFlipFlop(Ic):
 
 
 class IecSRFlipFlop(Ic):
-    ''' Iec style J-K Flip Flop
+    ''' Iec style S-R Flip Flop
 
         Args:
+            qbar: Show inverted output
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
+            nameqpin: Name of qpin (outside of box)
+            nameqbarpin: Nam of inverted output (outside of box)
 
         Keyword Args:
             size: Size of the box [default: (2, 3)]
