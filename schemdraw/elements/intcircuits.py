@@ -627,6 +627,7 @@ class DFlipFlop(Ic):
 
         Args:
             qbar: Show inverted output
+            negedge: inverted clk input
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
 
@@ -644,9 +645,9 @@ class DFlipFlop(Ic):
     _element_defaults = {
         'size': (2, 3)
     }
-    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True, **kwargs):
+    def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True, **kwargs):
         pins = [IcPin('D', side='left', slot='2/2'),
-                IcPin('>', side='left', slot='1/2'),
+                IcPin('>', invert=negedge, side='left', slot='1/2'),
                 IcPin('Q', side='right', slot='2/2')]
 
         if qbar:
@@ -663,6 +664,7 @@ class IecDFlipFlop(Ic):
 
         Args:
             qbar: Show inverted output
+            negedge: inverted clk input
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
             nameqpin: Name of qpin (outside of box)
@@ -679,10 +681,10 @@ class IecDFlipFlop(Ic):
             * PRE
             * CLR
     '''
-    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True,
+    def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True,
                  nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
         pins = [IcPin('1D', anchorname='D', side='left', slot='2/2'),
-                IcPin('C1', anchorname='CLK', dynamic=True, side='left', slot='1/2'),
+                IcPin('C1', anchorname='CLK', invert=negedge, dynamic=True, side='left', slot='1/2'),
                 IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
 
         if qbar:
@@ -701,6 +703,7 @@ class TFlipFlop(Ic):
 
         Args:
             qbar: Show inverted output
+            negedge: inverted clk input
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
 
@@ -718,9 +721,9 @@ class TFlipFlop(Ic):
     _element_defaults = {
         'size': (2, 3)
     }
-    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True, **kwargs):
         pins = [IcPin('T', side='left', slot='2/2'),
-                IcPin('>', side='left', slot='1/2'),
+    def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True, **kwargs):
+                IcPin('>', invert=negedge, side='left', slot='1/2'),
                 IcPin('Q', side='right', slot='2/2')]
 
         if qbar:
@@ -737,6 +740,7 @@ class IecTFlipFlop(Ic):
 
         Args:
             qbar: Show inverted output
+            negedge: inverted clk input
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
             nameqpin: Name of qpin (outside of box)
@@ -753,10 +757,10 @@ class IecTFlipFlop(Ic):
             * PRE
             * CLR
     '''
-    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True,
+    def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True,
                  nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
         pins = [IcPin('1T', anchorname='T', side='left', slot='2/2'),
-                IcPin('C1', anchorname='CLK', dynamic=True, side='left', slot='1/2'),
+                IcPin('C1', anchorname='CLK', invert=negedge, dynamic=True, side='left', slot='1/2'),
                 IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
 
         if qbar:
@@ -775,6 +779,7 @@ class JKFlipFlop(Ic):
 
         Args:
             qbar: Show inverted output
+            negedge: inverted clk input
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
 
@@ -793,9 +798,9 @@ class JKFlipFlop(Ic):
     _element_defaults = {
         'size': (2, 3)
     }
-    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True, **kwargs):
+    def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True, **kwargs):
         pins = [IcPin('J', side='left', slot='3/3'),
-                IcPin('>', side='left', slot='2/3'),
+                IcPin('>', invert=negedge, side='left', slot='2/3'),
                 IcPin('K', side='left', slot='1/3'),
                 IcPin('Q', side='right', slot='3/3')]
 
@@ -814,6 +819,7 @@ class IecJKFlipFlop(Ic):
 
         Args:
             qbar: Show inverted output
+            negedge: inverted clk input
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
             nameqpin: Name of qpin (outside of box)
@@ -831,10 +837,10 @@ class IecJKFlipFlop(Ic):
             * PRE
             * CLR
     '''
-    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True,
+    def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True,
                  nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
         pins = [IcPin('1J', anchorname='J', side='left', slot='3/3'),
-                IcPin('C1', anchorname='CLK', dynamic=True, side='left', slot='2/3'),
+                IcPin('C1', anchorname='CLK', invert=negedge, dynamic=True, side='left', slot='2/3'),
                 IcPin('1K', anchorname='K', side='left', slot='1/3'),
                 IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
 
@@ -854,6 +860,7 @@ class SRFlipFlop(Ic):
 
         Args:
             qbar: Show inverted output
+            negedge: inverted clk input
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
 
@@ -872,9 +879,9 @@ class SRFlipFlop(Ic):
     _element_defaults = {
         'size': (2, 3)
     }
-    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True, **kwargs):
+    def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True, **kwargs):
         pins = [IcPin('S', anchorname='SET', side='left', slot='3/3'),
-                IcPin('>', side='left', slot='2/3'),
+                IcPin('>', invert=negedge, side='left', slot='2/3'),
                 IcPin('R', anchorname='RST', side='left', slot='1/3'),
                 IcPin('Q', side='right', slot='3/3')]
 
@@ -893,6 +900,7 @@ class IecSRFlipFlop(Ic):
 
         Args:
             qbar: Show inverted output
+            negedge: inverted clk input
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
             nameqpin: Name of qpin (outside of box)
@@ -910,10 +918,10 @@ class IecSRFlipFlop(Ic):
             * PRE
             * CLR
     '''
-    def __init__(self, qbar: bool = True, preclr: bool = False, preclrinvert: bool = True,
+    def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True,
                  nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
         pins = [IcPin('1S', anchorname='SET', side='left', slot='3/3'),
-                IcPin('C1', anchorname='CLK', dynamic=True, side='left', slot='2/3'),
+                IcPin('C1', anchorname='CLK', invert=negedge, dynamic=True, side='left', slot='2/3'),
                 IcPin('1R', anchorname='RST', side='left', slot='1/3'),
                 IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
 
