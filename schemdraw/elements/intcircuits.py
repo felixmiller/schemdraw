@@ -664,6 +664,7 @@ class IecDFlipFlop(Ic):
 
         Args:
             qbar: Show inverted output
+            latch: static clk input
             negedge: inverted clk input
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
@@ -681,10 +682,10 @@ class IecDFlipFlop(Ic):
             * PRE
             * CLR
     '''
-    def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True,
+    def __init__(self, qbar: bool = True, latch: bool = False,  negedge: bool = False, preclr: bool = False, preclrinvert: bool = True,
                  nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
         pins = [IcPin('1D', anchorname='D', side='left', slot='2/2'),
-                IcPin('C1', anchorname='CLK', invert=negedge, dynamic=True, side='left', slot='1/2'),
+                IcPin('C1', anchorname='CLK', invert=negedge, dynamic=not latch, side='left', slot='1/2'),
                 IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
 
         if qbar:
@@ -900,6 +901,7 @@ class IecSRFlipFlop(Ic):
 
         Args:
             qbar: Show inverted output
+            latch: static clk input
             negedge: inverted clk input
             preclr: Show preset and clear inputs
             preclrinvert: Add invert bubble to preset and clear inputs
@@ -918,10 +920,10 @@ class IecSRFlipFlop(Ic):
             * PRE
             * CLR
     '''
-    def __init__(self, qbar: bool = True, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True,
+    def __init__(self, qbar: bool = True, latch: bool = False, negedge: bool = False, preclr: bool = False, preclrinvert: bool = True,
                  nameqpin: str = r'$\mathrm{Q}$', nameqbarpin: str = r'$\overline{\mathrm{Q}}$', **kwargs):
         pins = [IcPin('1S', anchorname='SET', side='left', slot='3/3'),
-                IcPin('C1', anchorname='CLK', invert=negedge, dynamic=True, side='left', slot='2/3'),
+                IcPin('C1', anchorname='CLK', invert=negedge, dynamic=not latch, side='left', slot='2/3'),
                 IcPin('1R', anchorname='RST', side='left', slot='1/3'),
                 IcPin(pin=nameqpin, anchorname='Q', side='right', slot='2/2')]
 
