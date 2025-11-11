@@ -107,6 +107,7 @@ class TimingDiagram(Element):
             risetime: Rise/fall time for wave transitions
             fontsize: Size of label fonts
             nodesize: Size of node labels
+            textpad: Padding between wave and wave name
             namecolor: Color for wave names
             datacolor: Color for wave data text
             nodecolor: Color for node text
@@ -135,6 +136,7 @@ class TimingDiagram(Element):
         'risetime': 0.15,
         'fontsize': 12,
         'nodesize': 8,
+        'textpad': 0.2,
         'namecolor': 'blue',
         'datacolor': None,  # Inherit
         'nodecolor': None,  # Inherit
@@ -151,6 +153,7 @@ class TimingDiagram(Element):
         self.risetime = self.params['risetime']
         self.fontsize = self.params['fontsize']
         self.nodesize = self.params['nodesize']
+        self.textpad = self.params['textpad']
         self.namecolor = self.params['namecolor']
         self.datacolor = self.params['datacolor']  # default: get color from theme
         self.nodecolor = self.params['nodecolor']
@@ -249,7 +252,7 @@ class TimingDiagram(Element):
 
     def _drawname(self, name, y0):
         ''' Draw name of one wave. Returns calculated unit width of the string. '''
-        textpad = .2
+        textpad = self.textpad
         self.segments.append(
             SegmentText((-textpad, y0), name, align=('right', 'bottom'),
                         fontsize=self.fontsize, color=self.namecolor))
