@@ -93,7 +93,7 @@ IecXnor = partial(IecLogicGate, invout=True, text='=1')
 IecNot = partial(IecLogicGate, inputs=1, invout=True, text='1')
 IecBuf = partial(IecLogicGate, inputs=1, text='1')
 
-class And(Element):
+class DsAnd(Element):
     ''' AND gate
 
         Args:
@@ -169,10 +169,10 @@ class And(Element):
         self.params['drop'] = self.segments[-1].path[-1]  # type: ignore
 
 
-Nand = partial(And, nand=True)
+DsNand = partial(DsAnd, nand=True)
 
 
-class Or(Element):
+class DsOr(Element):
     ''' OR or XOR gate element.
 
         Args:
@@ -278,12 +278,12 @@ class Or(Element):
         self.tip = tip
 
 
-Nor = partial(Or, nor=True)
-Xor = partial(Or, xor=True)
-Xnor = partial(Or, nor=True, xor=True)
+DsNor = partial(DsOr, nor=True)
+DsXor = partial(DsOr, xor=True)
+DsXnor = partial(DsOr, nor=True, xor=True)
 
 
-class Buf(Element2Term):
+class DsBuf(Element2Term):
     ''' Buffer
 
         Anchors:
@@ -298,7 +298,7 @@ class Buf(Element2Term):
         self.anchors['in1'] = (0, 0)
 
 
-class Not(Element2Term):
+class DsNot(Element2Term):
     ''' Not gate/inverter
 
         Anchors:
@@ -312,6 +312,16 @@ class Not(Element2Term):
         self.segments.append(SegmentCircle((gatel+notbubble, 0), notbubble))
         self.anchors['out'] = (gatel+notbubble*2, 0)
         self.anchors['in1'] = (0, 0)
+
+# default to distinctive shape style
+And = DsAnd
+Nand = DsNand
+Or = DsOr
+Nor = DsNor
+Xor = DsXor
+Xnor = DsXnor
+Not = DsNot
+Buf = DsBuf
 
 
 class Tristate(Element2Term):
