@@ -6,7 +6,7 @@ import math
 
 from ..segments import Segment, SegmentCircle
 from ..elements import Element, Element2Term
-from ..util import linspace
+from ..util import linspace, Point
 
 
 gap = (math.nan, math.nan)
@@ -14,8 +14,80 @@ gateh = 1.
 gatel = .65
 notbubble = .12
 
+class LogicGateIEC(Element):
+    ''' IEC logic gate (rectangular)
 
-class And(Element):
+        Args:
+            inputs: Number of inputs to gate.
+            text: Text to display in the rectangle (logical operation)
+            invout: Draw invert bubble on output
+            inputnots: Input numbers (starting at 1) of inputs that have invert bubble
+            leadin: Length of input leads [default: 0.535]
+            leadout: Length of output lead [default: 0.535]
+
+        Anchors:
+            out
+            in[X] - for each input
+    '''
+    _element_defaults = {
+        'leadin': 0.535,
+        'leadout': 0.535
+    }
+    def __init__(self, *d, inputs: int = 2, text = None, invout: bool = False, inputnots: Optional[Sequence[int]] = None,
+                 leadin: Optional[float] = None, leadout: Optional[float] = None, **kwargs):
+        super().__init__(*d, **kwargs)
+        _leadin = self.params['leadin']
+        _leadout = self.params['leadout']
+
+        # Set distance between inputs. A little larger for 2 input gates.
+        rectw = gatel*1.2
+        if inputs == 2:
+            dy = gateh*.5
+            recth = gateh
+        elif inputs == 3:
+            dy = gateh*.33
+            recth = gateh
+        else:  # inputs > 3:
+            dy = gateh*.4
+            recth = dy * inputs
+
+        self.anchors['out'] = (rectw+_leadin+_leadout, 0)
+        self.anchors['end'] = self.anchors['out']
+
+        path = [Point((_leadin, recth/2)), Point((rectw+_leadin, recth/2)), Point((rectw+_leadin, -recth/2)), Point((_leadin, -recth/2)), Point((_leadin, recth/2))]
+        self.segments.append(Segment(path))
+
+        # Add the inputs and define anchor names
+        for i in range(inputs):
+            y = (i+1 - (inputs/2+.5)) * dy
+            self.anchors['in%d' % (inputs-i)] = (0, y)
+
+            if inputnots and (inputs-i) in inputnots:
+                self.segments.append(SegmentCircle((_leadin-notbubble, y), notbubble))
+                self.segments.append(Segment([(0, y), (_leadin-notbubble*2, y)]))
+            else:
+                self.segments.append(Segment([(0, y), (_leadin, y)]))
+
+        # Output lead
+        if invout:
+            self.segments.append(SegmentCircle(
+                (_leadin+rectw+notbubble, 0), notbubble))
+            self.segments.append(Segment(
+                [(rectw+_leadin+notbubble*2, 0), (rectw+_leadin+_leadout, 0)]))
+        else:
+            self.segments.append(Segment(
+                [(rectw+_leadin, 0), (rectw+_leadin+_leadout, 0)]))
+        self.params['drop'] = self.segments[-1].path[-1]  # type: ignore
+        self.label(text,loc='center')
+
+AndIEC = partial(LogicGateIEC, text='&amp;')
+NandIEC = partial(LogicGateIEC, invout=True, text='&amp;')
+OrIEC = partial(LogicGateIEC, text='≥1')
+NorIEC = partial(LogicGateIEC, invout=True, text='≥1')
+XorIEC = partial(LogicGateIEC, text='=1')
+XnorIEC = partial(LogicGateIEC, invout=True, text='=1')
+
+class AndDS(Element):
     ''' AND gate
 
         Args:
@@ -90,10 +162,12 @@ class And(Element):
         self.params['drop'] = self.segments[-1].path[-1]  # type: ignore
 
 
-Nand = partial(And, nand=True)
+NandDS = partial(AndDS, nand=True)
 
 
-class Or(Element):
+
+
+class OrDS(Element):
     ''' OR or XOR gate element.
 
         Args:
@@ -198,9 +272,9 @@ class Or(Element):
         self.tip = tip
 
 
-Nor = partial(Or, nor=True)
-Xor = partial(Or, xor=True)
-Xnor = partial(Or, nor=True, xor=True)
+NorDS = partial(OrDS, nor=True)
+XorDS = partial(OrDS, xor=True)
+XnorDS = partial(OrDS, nor=True, xor=True)
 
 
 class Buf(Element2Term):
@@ -311,6 +385,14 @@ class Tgate(Element2Term):
         self.anchors['in1'] = (0, 0)
         self.anchors['c'] = (gatel/2, -.7)
         self.anchors['cbar'] = (gatel/2, .7)
+
+# default to distinctive shape style
+And = AndIEC
+Nand = NandDS
+Or = OrDS
+Nor = NorDS
+Xor = XorDS
+Xnor = XnorDS
 
 
 class Schmitt(Buf):
