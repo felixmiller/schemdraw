@@ -193,7 +193,7 @@ class TimingDiagram(Element):
         y0 = 0.
         for signal in signals_flat:
             name = signal.get('name', '')
-            _width = self._drawname(name, y0)
+            _width = self._drawname(name, y0+self.yheight/2)
             labelwidth = max(labelwidth, _width)
 
             if 'async' in signal:
@@ -254,7 +254,7 @@ class TimingDiagram(Element):
         ''' Draw name of one wave. Returns calculated unit width of the string. '''
         textpad = self.textpad
         self.segments.append(
-            SegmentText((-textpad, y0), name, align=('right', 'bottom'),
+            SegmentText((-textpad, y0), name, align=('right', 'center'),
                         fontsize=self.fontsize, color=self.namecolor))
         return text_size(name, size=self.fontsize)[0] * PTS_TO_UNITS
 
