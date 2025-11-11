@@ -694,9 +694,9 @@ class IecDFlipFlop(Ic):
         if preclr:
             pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
                          IcPin('CLR', side='bottom', invert=preclrinvert)])
-            super().__init__(pins=pins, size=(2,4), edgepadH=1, **kwargs)
+            super().__init__(pins=pins, size=(2,3), edgepadH=1, **kwargs)
         else:
-            super().__init__(pins=pins, size=(2,3), **kwargs)
+            super().__init__(pins=pins, size=(2,2), **kwargs)
 
 
 class TFlipFlop(Ic):
@@ -770,9 +770,9 @@ class IecTFlipFlop(Ic):
         if preclr:
             pins.extend([IcPin('PRE', side='top', invert=preclrinvert),
                          IcPin('CLR', side='bottom', invert=preclrinvert)])
-            super().__init__(pins=pins, size=(2,4), edgepadH=1, **kwargs)
+            super().__init__(pins=pins, size=(2,3), edgepadH=1, **kwargs)
         else:
-            super().__init__(pins=pins, size=(2,3), **kwargs)
+            super().__init__(pins=pins, size=(2,2), **kwargs)
 
 
 class JKFlipFlop(Ic):
