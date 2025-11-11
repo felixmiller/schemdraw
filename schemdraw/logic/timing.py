@@ -340,7 +340,7 @@ class TimingDiagram(Element):
             times = [float(f) for f in times.split()]
 
         if len(wave) + 1 != len(times):
-            raise ValueError('len(times) must be one more than len(wave).')
+            raise ValueError(f'len(times)[{len(times)}] must be one more than len(wave)[{len(wave)}].')
 
         period = 2*self.yheight*signal.get('period', 1) * self.hscale
         y1 = y0 + self.yheight
