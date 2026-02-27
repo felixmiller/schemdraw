@@ -472,6 +472,13 @@ class StateMoore(Connect):
         h = self.params['h']
         self.segments.append(Segment([(0, 0), (w, 0)]))
 
+    def _set_anchors(self):
+        super()._set_anchors()
+        w = self.params['w']
+        h = self.params['h']
+        self.anchors['code'] = (w/2, (h/2)*0.4)
+        self.anchors['output'] = (w/2, -(h/2)*0.4)
+
 
 Process = Box
 RoundProcess = RoundBox
