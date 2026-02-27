@@ -38,7 +38,8 @@ class Box(Element):
         'pad': 0.25,
         'lblloc': 'center',
         'lblofst': 0,
-        'theta': 0
+        'theta': 0,
+        'ls' : '-'
     }
     def _set_anchors(self):
         w, h = self.params['w'], self.params['h']
@@ -75,7 +76,7 @@ class Box(Element):
     def _set_segments(self):
         w, h = self.params['w'], self.params['h']
         self.segments.append(Segment([(0, 0), (0, h/2), (w, h/2),
-                                      (w, -h/2), (0, -h/2), (0, 0)]))
+                                      (w, -h/2), (0, -h/2), (0, 0)],ls=self.params['ls']))
     
     def _place(self, dwgxy, dwgtheta, **dwgparams):
         ''' Make the box flow in the current drawing direction '''
