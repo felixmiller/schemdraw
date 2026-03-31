@@ -169,8 +169,11 @@ def text_size(text: str,
         if text == '':
             return (0, 0, 0)
 
-        m = ziamath.Text(text, size=size, mathstyle=font, textfont=font, mathfont=mathfont)
-        return (*m.getsize(), m.getyofst())
+        try:
+            m = ziamath.Text(text, size=size, mathstyle=font, textfont=font, mathfont=mathfont)
+            return (*m.getsize(), m.getyofst())
+        except Exception:
+            pass  # fall back to approximate size
 
     return svgtext.text_approx_size(text, font=font, size=size)
 
