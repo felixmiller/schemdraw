@@ -40,8 +40,8 @@ class IcPin:
     slot: str | None = None
     invert: bool = False
     invertradius: float = 0.15
-    dynamic: bool = False,
-    tristate: bool = False,
+    dynamic: bool = False
+    tristate: bool = False
     color: str | None = None
     rotation: float = 0
     anchorname: str | None = None
