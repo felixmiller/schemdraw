@@ -622,6 +622,228 @@ class IcDIP(Element):
                 self.anchors[f'{names[pnum-1]}_in'] = (w, ymid)
 
 
+class IcDIPCustom(Ic):
+    ''' IC with DIP-style pin pads — Ic flexibility plus IcDIP visuals.
+
+        Each pin gets a small rectangular pad on the IC body edge with
+        the pin number drawn inside the pad. Leads start at the outer
+        edge of the pad, not the IC body. All Ic features (slot/pos
+        placement, custom pin numbering, gaps, arbitrary ordering,
+        invert/dynamic/tristate, named anchors) work as usual.
+
+        Use this when IcDIP's auto-numbered, evenly-spaced layout is
+        too rigid — for example for connection-diagram templates where
+        pins are grouped by function.
+
+        Keyword Args:
+            padw: Pad depth, perpendicular to the body edge [default: 0.4]
+            padh: Pad height, along the body edge [default: 0.4]
+            w:    Fixed box width. If given, overrides the auto-computed
+                  width; height still autosizes from the pin slots.
+                  Useful for stacking ICs and joining them with straight
+                  vertical lines [default: None = auto].
+
+        Extra anchors (in addition to Ic's): topL, topR, botL, botR — points
+        on the top and bottom horizontal edges at horizontal fractions 0.15
+        and 0.85. Useful for stacking two IcDIPCustoms head-on-body and
+        bridging them with vertical lines.
+
+        See Ic for all other args/anchors.
+    '''
+    _element_defaults = {
+        **Ic._element_defaults,
+        'padw': 0.4,
+        'padh': 0.4,
+        'w': None,
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Register anchor names so Ic.__getattr__ knows about them. The
+        # actual coordinates are computed in _place once _icbox is real.
+        for name in ('topL', 'topR', 'botL', 'botR'):
+            self.anchors[name] = (0, 0)
+
+    def _autosize(self) -> None:
+        ''' Size the box to exactly fit the pin slots, without the
+            ``2+edgepadH/W`` floor that Ic._autosize imposes.
+
+            With slot-based pin placement the natural box height is
+            ``2*edgepadH + spacing*(N-1)`` where N is the slot count.
+            Removing the floor means small ICs (1-2 pins) keep the
+            requested edge padding instead of being stretched to a
+            2-unit minimum.
+        '''
+        lengths: dict[str, float] = {}
+        labelwidths: dict[str, float] = {}
+        for side in ['L', 'R', 'T', 'B']:
+            side = cast(Side, side)
+            sideparam = replace(self.usersides.get(side, self._dflt_side))
+            self.sides[side] = sideparam
+            if sideparam.spacing == 0:
+                sideparam.spacing = 0.6
+            lengths[side] = sideparam.pad * 2 + sideparam.spacing * (self.pincount[side] - 1)
+            labelw = 0.
+            for p in self.pins[side]:
+                if p.name:
+                    lblsize = p.lblsize if p.lblsize else self.params['lsize']
+                    labelw = max(labelw, text_size(p.name, size=lblsize)[0] / 72 * 2)
+            labelwidths[side] = labelw
+
+        labelw = labelwidths['L'] + labelwidths['R'] + 4 * self.params['lofst']
+        boxh = max(lengths.get('L', 0.), lengths.get('R', 0.))
+        if self.params.get('w') is not None:
+            boxw = self.params['w']
+        else:
+            boxw = max(lengths.get('T', 0.), lengths.get('B', 0.), labelw)
+        self._sizeauto = boxw, boxh
+
+        # Re-center pads on the side that doesn't drive the height/width
+        for side in ['L', 'R']:
+            side = cast(Side, side)
+            sideparam = self.sides.get(side, self._dflt_side)
+            sideparam.pad = (boxh - sideparam.spacing * (self.pincount[side] - 1)) / 2
+        for side in ['T', 'B']:
+            side = cast(Side, side)
+            sideparam = self.sides.get(side, self._dflt_side)
+            sideparam.pad = (boxw - sideparam.spacing * (self.pincount[side] - 1)) / 2
+
+    def _place(self, dwgxy, dwgtheta, **dwgparams):
+        # Replicate Ic._place so we can inject our custom anchors with
+        # the correct dimensions before the parent transforms anchors
+        # into absolute coordinates.
+        self._icbox = self._drawbox()
+        self._drawpins()
+        self.elmparams['lblloc'] = 'center'
+        w = self._icbox.w
+        h = self._icbox.h
+        # head/body bridging anchors at 15%/85% of the top/bottom edge
+        self.anchors['topL'] = (0.15 * w, h)
+        self.anchors['topR'] = (0.85 * w, h)
+        self.anchors['botL'] = (0.15 * w, 0)
+        self.anchors['botR'] = (0.85 * w, 0)
+        # Compass anchors on the IC BODY (independent of pin/lead bbox).
+        # Use these for label placement when pins are only on one side
+        # so the bbox center is asymmetric.
+        cx, cy = w / 2, h / 2
+        self.anchors['center'] = (cx, cy)
+        self.anchors['N']   = (cx, h)
+        self.anchors['S']   = (cx, 0)
+        self.anchors['E']   = (w,  cy)
+        self.anchors['W']   = (0,  cy)
+        self.anchors['NE']  = (w, h)
+        self.anchors['NW']  = (0, h)
+        self.anchors['SE']  = (w, 0)
+        self.anchors['SW']  = (0, 0)
+        self.anchors['NNE'] = (3 * w / 4, h)
+        self.anchors['NNW'] = (    w / 4, h)
+        self.anchors['SSE'] = (3 * w / 4, 0)
+        self.anchors['SSW'] = (    w / 4, 0)
+        self.anchors['ENE'] = (w, 2 * h / 3)
+        self.anchors['ESE'] = (w,     h / 3)
+        self.anchors['WNW'] = (0, 2 * h / 3)
+        self.anchors['WSW'] = (0,     h / 3)
+        return Element._place(self, dwgxy, dwgtheta, **dwgparams)
+
+    def _drawpin(self, side: Side, pin: IcPin, num: int) -> None:  # type: ignore[override]
+        sidesetup = self.sides.get(side, self._dflt_side)
+        xy = self._pinpos(side, pin, num)
+        padw = self.params['padw']
+        padh = self.params['padh']
+
+        outward = {'L': Point((-1, 0)), 'R': Point((1, 0)),
+                   'T': Point((0, 1)),  'B': Point((0, -1))}.get(side, Point((0, 0)))
+        along = {'L': Point((0, 1)), 'R': Point((0, 1)),
+                 'T': Point((1, 0)), 'B': Point((1, 0))}.get(side, Point((0, 0)))
+
+        # Pad polygon (outside the IC body)
+        pad_inner_a = xy - along * (padh / 2)
+        pad_inner_b = xy + along * (padh / 2)
+        pad_outer_a = pad_inner_a + outward * padw
+        pad_outer_b = pad_inner_b + outward * padw
+        self.segments.append(SegmentPoly(
+            [pad_inner_a, pad_outer_a, pad_outer_b, pad_inner_b]))
+
+        # Pin number inside the pad
+        if pin.pin:
+            self.segments.append(SegmentText(
+                pos=xy + outward * (padw / 2),
+                label=str(pin.pin),
+                align=('center', 'center'),
+                fontsize=(pin.pinlblsize if pin.pinlblsize is not None
+                          else sidesetup.pinlabel_size)))
+
+        # Anchor at end of full lead (unchanged from Ic)
+        leadext = outward * sidesetup.leadlen
+        anchorpos = xy + leadext
+        self.anchors[f'in{side[0].upper()}{num+1}'] = anchorpos
+        if pin.anchorname:
+            self.anchors[pin.anchorname] = anchorpos
+        elif pin.name:
+            if pin.name == '>':
+                self.anchors['CLK'] = anchorpos
+            self.anchors[pin.name] = anchorpos
+        if pin.pin:
+            self.anchors[f'pin{pin.pin}'] = anchorpos
+
+        # Lead from outer pad edge to anchor (only if leadlen > padw)
+        if sidesetup.leadlen > padw:
+            lead_start = xy + outward * padw
+            if pin.invert:
+                invertradius = pin.invertradius
+                bubble_center = lead_start + outward * invertradius
+                self.segments.append(SegmentCircle(bubble_center, invertradius))
+                self.segments.append(Segment(
+                    [lead_start + outward * (2 * invertradius), anchorpos]))
+            else:
+                self.segments.append(Segment([lead_start, anchorpos]))
+
+        # Clock pin (>)
+        if pin.name == '>':
+            self._drawclkpin(xy, leadext, side, pin, num)
+            return
+
+        # Dynamic input
+        label_ofst = sidesetup.label_ofst
+        if pin.dynamic:
+            self._drawclkpin(xy, leadext, side, pin, num)
+            label_ofst += 0.4 * sidesetup.label_size / 16
+
+        # Tristate
+        if pin.tristate:
+            scale = 0.75
+            w = h = 0.4 * sidesetup.label_size / 16
+            pofst_ts = {'L': Point((label_ofst, 0)),
+                        'R': Point((-label_ofst, 0)),
+                        'T': Point((0, -label_ofst)),
+                        'B': Point((0, label_ofst))}.get(side, Point((0, 0)))
+            self._draw3stpin(xy + pofst_ts, leadext, w * scale, h * scale, side, pin, num)
+            label_ofst += w
+
+        # Pin name (inside body)
+        if pin.name and pin.name != '':
+            pofst = {'L': Point((label_ofst, 0)),
+                     'R': Point((-label_ofst, 0)),
+                     'T': Point((0, -label_ofst)),
+                     'B': Point((0, label_ofst))}.get(side, Point((0, 0)))
+            align = cast(Optional[Tuple[Halign, Valign]],
+                         {'L': ('left', 'center'),
+                          'R': ('right', 'center'),
+                          'T': ('center', 'top'),
+                          'B': ('center', 'bottom')}.get(side))
+            self.segments.append(SegmentText(
+                pos=xy + pofst,
+                label=pin.name,
+                align=align,
+                fontsize=(pin.lblsize if pin.lblsize is not None
+                          else sidesetup.label_size),
+                color=pin.color,
+                rotation=pin.rotation,
+                rotation_mode='default',
+                href=pin.href,
+                decoration=pin.decoration))
+
+
 class DFlipFlop(Ic):
     ''' D-Type Flip Flop
 
