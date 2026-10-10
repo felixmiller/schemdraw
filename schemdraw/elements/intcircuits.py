@@ -426,13 +426,21 @@ class Ic(Element):
         sidesetup = self.sides.get(side, self._dflt_side)
         sidesetup.label_size
         clkw, clkh = 0.4 * sidesetup.label_size/16, 0.2 * sidesetup.label_size/16
+        # The triangle must point into the box. The lead direction gives that
+        # away, but with leadlen=0 there is no lead, so fall back to the side.
         if side in ['T', 'B']:
-            clkw = math.copysign(clkw, leadext[1]) if leadext[1] != 0 else clkw
+            if leadext[1] != 0:
+                clkw = math.copysign(clkw, leadext[1])
+            elif side == 'B':
+                clkw = -clkw
             clkpath = [Point((xy[0]-clkh, xy[1])),
                         Point((xy[0], xy[1]-clkw)),
                         Point((xy[0]+clkh, xy[1]))]
         else:
-            clkw = math.copysign(clkw, -leadext[0]) if leadext[0] != 0 else clkw
+            if leadext[0] != 0:
+                clkw = math.copysign(clkw, -leadext[0])
+            elif side == 'R':
+                clkw = -clkw
             clkpath = [Point((xy[0], xy[1]+clkh)),
                         Point((xy[0]+clkw, xy[1])),
                         Point((xy[0], xy[1]-clkh))]
